@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "ch2_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/holmes89/hello-api/ch2",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "ch2",
+    embed = [":ch2_lib"],
+    visibility = ["//visibility:public"],
+    static = "on"
+)
