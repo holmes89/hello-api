@@ -1,0 +1,38 @@
+name: Ch3 CI Checks
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  vet:
+    name: Check Ch3 App Vet
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+
+    - name: Build
+      run: go vet ./...
+
+  build:
+    name: Build Ch3 App
+    runs-on: ubuntu-latest
+    needs: vet
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+    
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+      
+    - name: Build
+      run: bazel build //ch3
+    
