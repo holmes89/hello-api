@@ -33,8 +33,13 @@ jobs:
     - name: Build
       run: bazel build //ch2
     
+    - name: Copy Files
+      run: |
+           mkdir artifacts
+           cp bazel-out/k8-fastbuild-ST-*/bin/ch2/ch2_/ch2 artifacts/.
+
     - name: Archive
       uses: actions/upload-artifact@v2
       with:
           name: api
-          path: ../bazel-out/k8-fastbuild-ST-*/bin/ch2/ch2_/ch2
+          path: artifacts/ch2
