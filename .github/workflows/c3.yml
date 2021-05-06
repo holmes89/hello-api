@@ -39,3 +39,8 @@ jobs:
     - name: Build
       run: bazel build //ch3
     
+    - name: Archive
+      uses: actions/upload-artifact@v2
+      with:
+          name: api
+          path: k8-fastbuild-ST-*/ch3/ch3_/ch3
