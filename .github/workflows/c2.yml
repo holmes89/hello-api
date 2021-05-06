@@ -26,4 +26,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: api
-          path: bazel-out/k8-fastbuild-ST-*/bin/ch3/ch3_/ch3
+          path: bazel-out/k8-fastbuild-ST-*/bin/ch2/ch2_/ch2
