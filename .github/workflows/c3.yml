@@ -29,6 +29,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: vet
     steps:
+    
+    - name: Cache bazel
+      uses: actions/cache@v2.1.4
+      env:
+        cache-name: bazel-cache
+      with:
+        path: |
+          ~/.cache/bazelisk
+          ~/.cache/bazel
+        key: ${{ runner.os }}-${{ env.cache-name }}
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -41,8 +51,10 @@ jobs:
     - name: Build
       run: bazel build //ch3
     
+    - run: ls
+
     - name: Archive
       uses: actions/upload-artifact@v2
       with:
           name: api
-          path: bazel-out/k8-fastbuild-ST-*/bin/ch3/ch3_/ch3
+          path: ../bazel-out/k8-fastbuild-ST-*/bin/ch3/ch3_/ch3

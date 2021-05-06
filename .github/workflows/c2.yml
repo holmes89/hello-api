@@ -10,6 +10,17 @@ jobs:
     name: Build Ch2 App
     runs-on: ubuntu-latest
     steps:
+    
+    # Caches and restores the bazelisk download directory, the bazel build directory.
+    - name: Cache bazel
+      uses: actions/cache@v2.1.4
+      env:
+        cache-name: bazel-cache
+      with:
+        path: |
+          ~/.cache/bazelisk
+          ~/.cache/bazel
+        key: ${{ runner.os }}-${{ env.cache-name }}
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -26,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: api
-          path: bazel-out/k8-fastbuild-ST-*/bin/ch2/ch2_/ch2
+          path: ../bazel-out/k8-fastbuild-ST-*/bin/ch2/ch2_/ch2
