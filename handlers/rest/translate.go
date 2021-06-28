@@ -21,7 +21,7 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	if language == "" {
 		language = "english"
 	}
-	word := strings.ReplaceAll(r.URL.Path, "/", "")
+	word := strings.ReplaceAll(r.URL.Path, "/translate/", "")
 	translation := translation.Translate(word, language)
 	if translation == "" {
 		language = ""
