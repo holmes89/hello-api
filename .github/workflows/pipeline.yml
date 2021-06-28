@@ -17,8 +17,22 @@ jobs:
     - name: Check out code into the Go module directory # <4>
       uses: actions/checkout@v2
     - name: Run Test
-      run: go test ./...
-      
+      run: make test
+    - name: Coverage Check
+      run: make coverage
+    - name: Generate Report
+      run: make report
+    - name: Copy Files # <6>
+      run: |
+           mkdir  reports
+           cp cover.html reports/.
+
+    - name: Archive # <7>
+      uses: actions/upload-artifact@v2
+      with:
+          name: reports # <8>
+          path: reports
+
   build:
     name: Build  App
     runs-on: ubuntu-latest # <2>
