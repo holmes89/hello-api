@@ -1,1 +1,1 @@
-web: hello-api
+web: api
