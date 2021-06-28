@@ -74,7 +74,6 @@ jobs:
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU }}
       run: |
-        ls
-        heroku login
+        heroku auth:token
         heroku create
         git push heroku main
