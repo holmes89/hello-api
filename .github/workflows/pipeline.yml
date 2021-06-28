@@ -6,9 +6,23 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build App
+  test:
+    name: Test Application
     runs-on: ubuntu-latest # <2>
+    steps:
+    - name: Set up Go 1.x # <3>
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+    - name: Check out code into the Go module directory # <4>
+      uses: actions/checkout@v2
+    - name: Run Test
+      run: go test ./...
+      
+  build:
+    name: Build  App
+    runs-on: ubuntu-latest # <2>
+    needs: test
     steps:
     
     - name: Set up Go 1.x # <3>
