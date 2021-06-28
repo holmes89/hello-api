@@ -66,7 +66,11 @@ jobs:
     steps:
     - name: Check out code into the Go module directory # <4>
       uses: actions/checkout@v2
-    - name: Login to Heroku Container registry
+    - name: Deploy App
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU }}
       run: heroku create
+    - name: Upload changes
+      env: 
+        HEROKU_API_KEY: ${{ secrets.HEROKU }}
+      run: git push heroku main

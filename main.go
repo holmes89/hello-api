@@ -3,14 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	handler "github.com/holmes89/hello-api/handlers"
 	"github.com/holmes89/hello-api/handlers/rest"
 )
 
 func main() {
-
-	addr := ":8080" // <1>
+	addr := os.Getenv("PORT")
+	if addr == "" {
+		addr = ":8080" // <1>
+	}
 
 	mux := http.NewServeMux()
 
