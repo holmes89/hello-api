@@ -69,8 +69,6 @@ jobs:
     - name: Deploy App
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU }}
-      run: heroku create
-    - name: Upload changes
-      env: 
-        HEROKU_API_KEY: ${{ secrets.HEROKU }}
-      run: git push heroku main
+      run: |
+        heroku create
+        git push heroku master
