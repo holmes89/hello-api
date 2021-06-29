@@ -66,15 +66,21 @@ jobs:
     steps:
     - name: Check out code into the Go module directory # <4>
       uses: actions/checkout@v2
-    - name: Download binary # <4>
-      uses: actions/download-artifact@v2
-      with:
-        name: api
-    - name: Deploy App
+    - name: "Heroku Setup"
+      shell: bash
       run: |
-              (
-                echo "$HEROKU_EMAIL"
-                echo "$HEROKU_PASSWORD"
-              ) | heroku login
-              heroku create holmes89-hello-api
-              git push heroku main
+        `cat >~/.netrc <<EOF
+        machine api.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_AUTH_TOKEN
+        machine git.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_AUTH_TOKEN
+        EOF`
+      env:
+        HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+        HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
+    - name: "Deploy to Heroku"
+      run: |
+          heroku create
+          git push heroku main

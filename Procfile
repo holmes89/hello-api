@@ -1,1 +1,1 @@
-web: api
+web: bin/hello-api
