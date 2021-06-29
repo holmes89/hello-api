@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,8 +11,8 @@ import (
 )
 
 func main() {
-	addr := os.Getenv("PORT")
-	if addr == "" {
+	addr := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	if addr == ":" {
 		addr = ":8080" // <1>
 	}
 
