@@ -71,8 +71,6 @@ jobs:
       with:
         name: api
     - name: Deploy App
-      env: 
-        HEROKU_API_KEY: ${{ secrets.HEROKU }}
       run: |
               (
                 echo "$HEROKU_EMAIL"
