@@ -74,9 +74,9 @@ jobs:
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU }}
       run: |
-            (
-              echo "holmes89@gmail.com"
-              echo "$HEROKU"
-            ) | heroku login
-            heroku create
-            git push heroku main
+              (
+                echo "$HEROKU_EMAIL"
+                echo "$HEROKU_PASSWORD"
+              ) | heroku login
+              heroku create holmes89-hello-api
+              git push heroku main
