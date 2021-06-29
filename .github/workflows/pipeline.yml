@@ -84,5 +84,5 @@ jobs:
         HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
     - name: "Deploy to Heroku"
       run: |
-          heroku create
+          heroku create holmes89-hello-api
           git push heroku main
