@@ -67,7 +67,7 @@ jobs:
     - name: Check out code into the Go module directory # <4>
       uses: actions/checkout@v2
       with:
-        ref: "main"
+        fetch-depth: 0
     - name: "Heroku Setup"
       shell: bash
       run: |
