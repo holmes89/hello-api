@@ -1,4 +1,7 @@
 GO_VERSION := 1.16.5
+TAG := $(shell git describe --abbrev=0 --tags --always)
+HASH := $(shell git rev-parse HEAD)
+DATE := $(shell date +%Y-%m-%d.%H:%M:%S)
 
 setup: install-go init-go
 
@@ -12,7 +15,7 @@ init-go:
 	echo 'export PATH=$$PATH:$${HOME}/go/bin' >> $${HOME}/.bashrc
 
 build:
-	go build -o api main.go
+	go build -ldflags "-w -X github.com/holmes89/hello-api/handlers.hash=$(HASH) -X github.com/holmes89/hello-api/handlers.tag=$(TAG) -X github.com/holmes89/hello-api/handlers.date=$(DATE)" -o api main.go
 
 test:
 	go test ./... -coverprofile=coverage.out
