@@ -116,5 +116,34 @@ jobs:
         HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
     - name: "Deploy to Heroku"
       run: |
+          heroku config:set BP_GO_BUILD_LDFLAGS=$(make ldflags)
+          heroku buildpacks:set https://github.com/paketo-buildpacks/go-build.git -a holmes89-hello-api
           heroku git:remote --app holmes89-hello-api
           git push heroku main
+  # deploy:
+  #   name: Deploy App
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #   - name: Check out code into the Go module directory # <4>
+  #     uses: actions/checkout@v2
+  #     with:
+  #       fetch-depth: 0
+  #   - name: "Heroku Setup"
+  #     shell: bash
+  #     run: |
+  #       `cat >~/.netrc <<EOF
+  #       machine api.heroku.com
+  #           login $HEROKU_EMAIL
+  #           password $HEROKU_AUTH_TOKEN
+  #       machine git.heroku.com
+  #           login $HEROKU_EMAIL
+  #           password $HEROKU_AUTH_TOKEN
+  #       EOF`
+  #     env:
+  #       HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+  #       HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
+  #   - name: "Deploy to Heroku"
+  #     run: |
+  #         heroku git:remote --app holmes89-hello-api
+  #         git push heroku main
