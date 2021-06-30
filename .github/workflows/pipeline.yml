@@ -116,8 +116,9 @@ jobs:
         HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
     - name: "Deploy to Heroku"
       run: |
-          heroku config:set GOOGLE_RUNTIME="go" -a holmes89-hello-api
-          heroku config:set GOOGLE_GOLDFLAGS="$(make ldflags)" -a holmes89-hello-api
+          heroku config:set BP_GO_BUILD_LDFLAGS="$(make ldflags)" -a holmes89-hello-api
+          heroku buildpacks:clear -a holmes89-hello-api
+          heroku buildpacks:set gcr.io/paketo-buildpacks/go -a holmes89-hello-api
           heroku git:remote --app holmes89-hello-api
           git push heroku main
   # deploy:
