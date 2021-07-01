@@ -117,7 +117,7 @@ jobs:
     - name: "Deploy to Heroku"
       run: |
           heroku config:set GO_LD_FLAGS="$(make ldflags)" -a holmes89-hello-api
-          heroku config:get GO_LD_FLAGS
+          heroku config:get GO_LD_FLAGS -a holmes89-hello-api
           heroku buildpacks:clear -a holmes89-hello-api
           heroku buildpacks:set https://github.com/holmes89/heroku-buildpack-go.git -a holmes89-hello-api
           heroku git:remote --app holmes89-hello-api
