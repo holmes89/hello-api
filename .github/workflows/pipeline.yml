@@ -4,6 +4,8 @@ on:
   push:
     branches: # <1>
       - main
+    tags:
+      - v*      
 
 jobs:
   test:
