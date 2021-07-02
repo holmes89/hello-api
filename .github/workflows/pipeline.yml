@@ -106,7 +106,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        ref: 'refs/heads/main'
     - name: "Heroku Setup"
       shell: bash
       run: |
@@ -127,7 +126,7 @@ jobs:
           heroku buildpacks:clear -a holmes89-hello-api
           heroku buildpacks:set https://github.com/holmes89/heroku-buildpack-go.git -a holmes89-hello-api
           heroku git:remote --app holmes89-hello-api
-          git push heroku main
+          git push heroku ${{ github.ref }}
   # deploy:
   #   name: Deploy App
   #   runs-on: ubuntu-latest
