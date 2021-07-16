@@ -22,7 +22,7 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	if language == "" {
 		language = "english"
 	}
-	log.Print(r.URL.Path)
+	panic(r.URL)
 	word := strings.ReplaceAll(r.URL.Path, "/translate/", "")
 	log.Print(word)
 	translation := translation.Translate(word, language)
