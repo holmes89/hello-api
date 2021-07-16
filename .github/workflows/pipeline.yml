@@ -110,8 +110,8 @@ jobs:
       id: deploy
       uses: google-github-actions/deploy-cloud-functions@main
       with:
-        source_dir: handlers/rest
-        name: TranslateHandler
+        source_dir: cmd/faas
+        name: Translate
         runtime: go113
         credentials: ${{ secrets.gcp_credentials }}
     - id: test
