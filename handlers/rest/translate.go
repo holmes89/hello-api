@@ -2,9 +2,8 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
+	"path/filepath"
 
 	"github.com/holmes89/hello-api/translation"
 )
@@ -22,9 +21,8 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	if language == "" {
 		language = "english"
 	}
-	fmt.Println(r.URL.Path)
-	word := strings.ReplaceAll(r.URL.Path, "/translate/", "")
-	fmt.Println(word)
+
+	word := filepath.Base(r.URL.Path)
 	translation := translation.Translate(word, language)
 	if translation == "" {
 		language = ""
