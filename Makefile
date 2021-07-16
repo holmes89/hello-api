@@ -19,7 +19,7 @@ ldflags:
 	@echo $(LDFLAGS)
 
 build: 
-	go build -ldflags "$(LDFLAGS)" -o api main.go
+	go build -ldflags "$(LDFLAGS)" -o api cmd/paas/main.go
 
 test:
 	go test ./... -coverprofile=coverage.out

@@ -97,8 +97,8 @@ jobs:
           asset_path: api
           asset_name: api
           asset_content_type: application/octet-stream
-  deploy:
-    name: Deploy App
+  deploy-function:
+    name: Deploy FaaS
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -113,6 +113,22 @@ jobs:
         name: translate
         entry_point: Translate
         runtime: go113
+        credentials: ${{ secrets.gcp_credentials }}
+    - id: test
+      run: curl "${{ steps.deploy.outputs.url }}/hello"
+  deploy-paas:
+    name: Deploy PaaS
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: Check out code into the Go module directory # <4>
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Deploy App
+      id: deploy
+      uses: google-github-actions/deploy-appengine@main
+      with:
         credentials: ${{ secrets.gcp_credentials }}
     - id: test
       run: curl "${{ steps.deploy.outputs.url }}/hello"
