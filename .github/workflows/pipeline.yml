@@ -116,4 +116,4 @@ jobs:
         runtime: go113
         credentials: ${{ secrets.gcp_credentials }}
     - id: test
-      run: curl "${{ steps.deploy.outputs.url }}"
+      run: curl "${{ steps.deploy.outputs.url }}/hello"
