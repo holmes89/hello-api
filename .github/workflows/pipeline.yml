@@ -112,6 +112,7 @@ jobs:
       with:
         source_dir: cmd/faas
         name: Translate
+        entry_point: Translate
         runtime: go113
         credentials: ${{ secrets.gcp_credentials }}
     - id: test
