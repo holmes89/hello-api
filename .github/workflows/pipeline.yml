@@ -111,7 +111,7 @@ jobs:
       uses: google-github-actions/deploy-cloud-functions@main
       with:
         source_dir: cmd/faas
-        name: Translate
+        name: translate
         entry_point: Translate
         runtime: go113
         credentials: ${{ secrets.gcp_credentials }}
