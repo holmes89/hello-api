@@ -3,16 +3,11 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/holmes89/hello-api/translation"
 )
-
-func init() {
-	log.SetFlags(0)
-}
 
 type Resp struct {
 	Language    string `json:"language"`
@@ -32,8 +27,7 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(word)
 	translation := translation.Translate(word, language)
 	if translation == "" {
-		language = r.URL.Path
-		translation = word
+		language = ""
 		w.WriteHeader(404)
 	}
 	resp := Resp{

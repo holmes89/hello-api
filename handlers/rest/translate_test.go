@@ -29,12 +29,12 @@ func TestTranslateAPI(t *testing.T) {
 			ExpectedLanguage:    "german",
 			ExpectedTranslation: "hallo",
 		},
-		// {
-		// 	Endpoint:            "/translate/hello?language=dutch",
-		// 	StatusCode:          404,
-		// 	ExpectedLanguage:    "",
-		// 	ExpectedTranslation: "",
-		// },
+		{
+			Endpoint:            "/translate/hello?language=dutch",
+			StatusCode:          404,
+			ExpectedLanguage:    "",
+			ExpectedTranslation: "",
+		},
 	}
 
 	handler := http.HandlerFunc(rest.TranslateHandler)
