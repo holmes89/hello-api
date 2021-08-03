@@ -4,7 +4,7 @@ HASH := $(shell git rev-parse HEAD)
 DATE := $(shell date +%Y-%m-%d.%H:%M:%S)
 LDFLAGS := -w -X github.com/holmes89/hello-api/handlers.hash=$(HASH) -X github.com/holmes89/hello-api/handlers.tag=$(TAG) -X github.com/holmes89/hello-api/handlers.date=$(DATE)
 
-setup: install-go init-go
+setup: install-go init-go copy-hooks
 
 install-go:
 	wget "https://golang.org/dl/go$(GO_VERSION).linux-amd64.tar.gz" --no-check-certificate
@@ -33,3 +33,6 @@ report:
 
 check-format:
 	test -z $$(go fmt ./...)
+
+copy-hooks:
+	cp -r scripts/hooks .git/.
