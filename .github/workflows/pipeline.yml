@@ -131,4 +131,4 @@ jobs:
       with:
         credentials: ${{ secrets.gcp_credentials }}
     - id: test
-      run: curl "${{ steps.deploy.outputs.url }}/hello"
+      run: curl "${{ steps.deploy.outputs.url }}/translate/hello"
