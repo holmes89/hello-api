@@ -1,6 +1,9 @@
 name: CI Checks
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches: # <1>
       - main
