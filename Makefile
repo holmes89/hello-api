@@ -35,4 +35,5 @@ check-format:
 	test -z $$(go fmt ./...)
 
 copy-hooks:
+	chmod +x scripts/hooks/*
 	cp -r scripts/hooks .git/.
