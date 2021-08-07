@@ -16,7 +16,7 @@ type Resp struct {
 }
 
 // TranslateHandler will take a given request with a path value of the
-// word to be translated and a query parameter of the language to translate to
+// word to be translated and a query parameter of the language to translate to.
 func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
