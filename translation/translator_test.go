@@ -66,7 +66,7 @@ func TestTranslate(t *testing.T) {
 
 		// Assert
 		if res != test.Translation {
-			t.Errorf(`expected "%s" to be translated to "%s" to be "%s" but recieved "%s"`, test.Word, test.Language, test.Translation, res)
+			t.Errorf(`expected "%s" to be translated to "%s" to be "%s" but received "%s"`, test.Word, test.Language, test.Translation, res)
 		}
 	}
 }

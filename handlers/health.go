@@ -1,3 +1,4 @@
+// Package handlers houses all standard information handlers for the application.
 package handlers
 
 import (
@@ -5,6 +6,7 @@ import (
 	"net/http"
 )
 
+// HealthCheck will respond with the current status of a given service.
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
