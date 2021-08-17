@@ -60,9 +60,10 @@ func TestTranslate(t *testing.T) {
 		},
 	}
 
+	underTest := translation.NewStaticService()
 	for _, test := range tt {
 		// Act
-		res := translation.Translate(test.Word, test.Language)
+		res := underTest.Translate(test.Word, test.Language)
 
 		// Assert
 		if res != test.Translation {

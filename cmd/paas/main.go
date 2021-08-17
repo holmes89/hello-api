@@ -8,6 +8,7 @@ import (
 
 	"github.com/holmes89/hello-api/handlers"
 	"github.com/holmes89/hello-api/handlers/rest"
+	"github.com/holmes89/hello-api/translation"
 )
 
 func main() {
@@ -18,7 +19,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/translate/hello", rest.TranslateHandler)
+	translationService := translation.NewStaticService()
+	translateHandler := rest.NewTranslateHandler(translationService)
+	mux.HandleFunc("/translate/hello", translateHandler.TranslateHandler)
 	mux.HandleFunc("/health", handlers.HealthCheck)
 	mux.HandleFunc("/info", handlers.Info)
 

@@ -3,8 +3,14 @@ package translation
 
 import "strings"
 
+type StaticService struct{}
+
+func NewStaticService() *StaticService {
+	return &StaticService{}
+}
+
 // Translate a given word to a the passed in language.
-func Translate(word string, language string) string {
+func (s *StaticService) Translate(word string, language string) string {
 	word = sanitizeInput(word)
 	language = sanitizeInput(language)
 

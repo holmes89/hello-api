@@ -5,9 +5,21 @@ import (
 	"encoding/json"
 	"net/http"
 	"path/filepath"
-
-	"github.com/holmes89/hello-api/translation"
 )
+
+type Translator interface {
+	Translate(word string, language string) string
+}
+
+type translateHandler struct {
+	service Translator
+}
+
+func NewTranslateHandler(service Translator) *translateHandler {
+	return &translateHandler{
+		service: service,
+	}
+}
 
 // Resp is the response sent back to the user.
 type Resp struct {
@@ -17,7 +29,7 @@ type Resp struct {
 
 // TranslateHandler will take a given request with a path value of the
 // word to be translated and a query parameter of the language to translate to.
-func TranslateHandler(w http.ResponseWriter, r *http.Request) {
+func (t *translateHandler) TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
@@ -27,7 +39,7 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	word := filepath.Base(r.URL.Path)
-	translation := translation.Translate(word, language)
+	translation := t.service.Translate(word, language)
 	if translation == "" {
 		language = ""
 		w.WriteHeader(404)

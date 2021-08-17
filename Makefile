@@ -4,7 +4,7 @@ HASH := $(shell git rev-parse HEAD)
 DATE := $(shell date +%Y-%m-%d.%H:%M:%S)
 LDFLAGS := -w -X github.com/holmes89/hello-api/handlers.hash=$(HASH) -X github.com/holmes89/hello-api/handlers.tag=$(TAG) -X github.com/holmes89/hello-api/handlers.date=$(DATE)
 
-setup: install-go init-go copy-hooks
+setup: install-go init-go isntall-lint copy-hooks
 
 install-go:
 	wget "https://golang.org/dl/go$(GO_VERSION).linux-amd64.tar.gz" --no-check-certificate
@@ -30,6 +30,9 @@ coverage:
 
 report:
 	go tool cover -html=coverage.out -o cover.html
+
+install-lint:
+	sudo curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.41.1
 
 check-format:
 	test -z $$(go fmt ./...)
