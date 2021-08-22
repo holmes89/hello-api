@@ -1,13 +1,12 @@
-name: Chapter 1 Checks
+name: Chapter 2 Checks
 
 on:
   push:
     branches: # <1>
       - main
-    paths:
-      - ch1/** 
-
-
+defaults:
+  run:
+    working-directory: ./ch2
 jobs:
   build:
     name: Build App
