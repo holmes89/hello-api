@@ -114,7 +114,7 @@ jobs:
         entry_point: Translate
         runtime: go113
         credentials: ${{ secrets.gcp_credentials }}
-        source_directory: ch4 # DO NOT INCLUDE
+        source_dir: ch4 # DO NOT INCLUDE
     - id: test
       run: curl "${{ steps.deploy.outputs.url }}/hello"
   deploy-paas:
