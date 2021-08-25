@@ -1,0 +1,132 @@
+name: Chapter 4 Checks
+
+on:
+  push:
+    branches: # <1>
+      - main
+defaults: # DO NOT INCLUDE
+  run:
+    working-directory: ./ch4
+jobs:
+ test:
+    name: Test Application
+    runs-on: ubuntu-latest # <2>
+    steps:
+    - name: Set up Go 1.x 
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+    - name: Check out code into the Go module directory 
+      uses: actions/checkout@v2
+    - name: Run Test
+      run: make test # <1>
+    - name: Coverage Check
+      run: make coverage # <2>
+    - name: Generate Report
+      run: make report # <3>
+    - name: Copy Files 
+      run: |
+           mkdir  reports
+           cp cover.html reports/.
+
+    - name: Archive # <4>
+      uses: actions/upload-artifact@v2
+      with:
+          name: reports
+          path: reports   
+  build:
+    name: Build App
+    runs-on: ubuntu-latest #
+    needs: test #<6>
+    steps:
+    - name: Set up Go 1.x #
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+
+    - name: Check out code into the Go module directory #
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: make build #
+
+    - name: Copy Files #
+      run: |
+           mkdir  artifacts
+           cp api artifacts/.
+
+    - name: Archive #
+      uses: actions/upload-artifact@v2
+      with:
+          name: api #
+          path: artifacts
+    deliver:  # <1>
+      name: Release
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+          uses: actions/checkout@v2
+      - name: Download binary  # <2>
+          uses: actions/download-artifact@v2
+          with:
+              name: api
+      - name: Create Release
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # <3>
+          with:
+              tag_name: ${{ github.ref }}  # <4>
+          release_name: Release ${{ github.ref }}  # <5>
+          body: |
+              Still in experimentation phase
+          draft: true  # <6>
+          prerelease: true  # <7>
+      - name: Upload Release Binary
+          uses: actions/upload-release-asset@v1
+          env:
+              GITHUB_TOKEN:
+                ${{ secrets.GITHUB_TOKEN }}
+          with:
+              upload_url:
+                ${{ steps.create_release.outputs.upload_url }} #<8>
+          asset_path: api
+          asset_name: api
+          asset_content_type: application/octet-stream  # <9>
+    deploy-function:
+        name: Deploy FaaS
+        runs-on: ubuntu-latest
+        needs: test
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        steps:
+        - name: Check out code into the Go module directory 
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Deploy function
+          id: deploy
+          uses: google-github-actions/deploy-cloud-functions@main
+          with:
+            name: translate 
+            entry_point: Translate 
+            runtime: go113
+            credentials: ${{ secrets.gcp_credentials }} 
+        - id: test
+          run: curl "${{ steps.deploy.outputs.url }}/hello" 
+    deploy-paas:
+      name: Deploy PaaS
+      runs-on: ubuntu-latest
+      needs: test
+      steps:
+      - name: Check out code into the Go module directory # <4>
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy App
+        id: deploy
+        uses: google-github-actions/deploy-appengine@main
+        with:
+          credentials: ${{ secrets.gcp_credentials }}
+      - id: test
+        run: curl "${{ steps.deploy.outputs.url }}/translate/hello"

@@ -4,7 +4,7 @@ on:
   push:
     branches: # <1>
       - main
-defaults:
+defaults: # DO NOT INCLUDE
   run:
     working-directory: ./ch2
 jobs:
