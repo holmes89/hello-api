@@ -4,11 +4,11 @@ on:
   push:
     branches: # <1>
       - main
-defaults:
+defaults: # DO NOT INCLUDE
   run:
     working-directory: ./ch3
 jobs:
- test:
+  test:
     name: Test Application
     runs-on: ubuntu-latest # <2>
     steps:
