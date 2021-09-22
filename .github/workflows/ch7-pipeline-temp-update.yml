@@ -42,7 +42,8 @@ jobs:
 
     - name: Check out code into the Go module directory #
       uses: actions/checkout@v2
-
+    - name: Install Pack
+      run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.21.1/pack-v0.21.1-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
     - name: Build
       run: pack build hello-api --builder gcr.io/buildpacks/builder:v1
 
