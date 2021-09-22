@@ -6,7 +6,7 @@ on:
       - main
 defaults: # DO NOT INCLUDE
   run:
-    working-directory: ./ch6
+    working-directory: ./ch4
 jobs:
   test:
     name: Test Application
