@@ -1,3 +1,4 @@
+// Package handlers houses other handlers needed for the API
 package handlers
 
 import (

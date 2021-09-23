@@ -46,7 +46,9 @@ func (c *APIClient) Translate(word, language string) (string, error) {
 	}
 
 	b, _ = ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	defer func(r *http.Response) {
+		_ = r.Body.Close()
+	}(resp)
 
 	var m map[string]interface{}
 	if err := json.Unmarshal(b, &m); err != nil {

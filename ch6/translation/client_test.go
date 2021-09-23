@@ -37,7 +37,9 @@ func (m *MockService) Translate(word, language string) (string, error) {
 func (suite *HelloClientSuite) SetupSuite() {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		b, _ := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
+		defer func(r *http.Request) {
+			_ = r.Body.Close()
+		}(r)
 
 		var m map[string]interface{}
 		_ = json.Unmarshal(b, &m)

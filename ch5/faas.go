@@ -1,3 +1,4 @@
+// Package faas is used for function definitions
 package faas
 
 import (

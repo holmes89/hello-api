@@ -24,8 +24,3 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
-
-type Resp struct { // <6>
-	Language    string `json:"language"`
-	Translation string `json:"translation"`
-}

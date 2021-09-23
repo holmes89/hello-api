@@ -1,3 +1,4 @@
+// Package rest houses all rest handlers
 package rest
 
 import (
@@ -24,7 +25,6 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	word := strings.ReplaceAll(r.URL.Path, "/", "")
 	translation := translation.Translate(word, language)
 	if translation == "" {
-		language = ""
 		w.WriteHeader(404)
 		return
 	}
