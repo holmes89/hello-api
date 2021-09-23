@@ -35,7 +35,6 @@ func (m *MockService) Translate(word, language string) (string, error) {
 }
 
 func (suite *HelloClientSuite) SetupSuite() {
-	suite.mockServerService = new(MockService)
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		b, _ := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -49,9 +48,11 @@ func (suite *HelloClientSuite) SetupSuite() {
 		resp, err := suite.mockServerService.Translate(word, language)
 		if err != nil {
 			http.Error(w, "error", 500)
+			return
 		}
 		if resp == "" {
 			http.Error(w, "missing", 404)
+			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, resp)
@@ -60,6 +61,10 @@ func (suite *HelloClientSuite) SetupSuite() {
 	mux.HandleFunc("/", handler)
 	suite.server = httptest.NewServer(mux)
 	suite.underTest = translation.NewHelloClient(suite.server.URL)
+}
+
+func (suite *HelloClientSuite) SetupTest() {
+	suite.mockServerService = new(MockService)
 }
 
 func (suite *HelloClientSuite) TearDownSuite() {
@@ -75,7 +80,7 @@ func (suite *HelloClientSuite) TestCall() {
 
 	// Assert
 	suite.NoError(err)
-	suite.Equal(resp, "baz")
+	suite.Equal("baz", resp)
 }
 
 func (suite *HelloClientSuite) TestCall_NotFound() {
@@ -87,7 +92,7 @@ func (suite *HelloClientSuite) TestCall_NotFound() {
 
 	// Assert
 	suite.NoError(err)
-	suite.Equal(resp, "")
+	suite.Equal("", resp)
 }
 
 func (suite *HelloClientSuite) TestCall_APIError() {
@@ -99,7 +104,7 @@ func (suite *HelloClientSuite) TestCall_APIError() {
 
 	// Assert
 	suite.EqualError(err, "error in api")
-	suite.Equal(resp, "")
+	suite.Equal("", resp)
 }
 
 func (suite *HelloClientSuite) TestCall_InvalidJSON() {
@@ -111,5 +116,5 @@ func (suite *HelloClientSuite) TestCall_InvalidJSON() {
 
 	// Assert
 	suite.EqualError(err, "unable to decode message")
-	suite.Equal(resp, "")
+	suite.Equal("", resp)
 }
