@@ -1,4 +1,4 @@
-name: Chapter 6 Checks
+name: Chapter 7 Checks
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 defaults: # DO NOT INCLUDE
   run:
-    working-directory: ./ch6
+    working-directory: ./ch7
 jobs:
   format-check:
     name: Check formatting
@@ -30,7 +30,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v2 
         with:
-          working-directory: ch6
+          working-directory: ch7
   test:
     name: Test Application
     needs: 
@@ -59,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: reports
-          path: ch6/reports  # Do not include ch6
+          path: ch7/reports  # Do not include ch7
   build:
     name: Build App
     runs-on: ubuntu-latest #
@@ -85,43 +85,73 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: api #
-          path: 5/artifacts  # Do not include ch6
-  # deliver:
-  #   name: Release
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Download binary # <4>
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: api
-  #     - name: Changelog
-  #       uses: scottbrenner/generate-changelog-action@master
-  #       id: Changelog
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-  #       with:
-  #         tag_name: ${{ github.ref }}
-  #         release_name: Release ${{ github.ref }}
-  #         body: |
-  #           ${{ steps.Changelog.outputs.changelog }}
-  #         draft: false
-  #         prerelease: false
-  #     - name: Upload Release Binary
-  #       uses: actions/upload-release-asset@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-  #         asset_path: api
-  #         asset_name: api
-  #         asset_content_type: application/octet-stream
+          path: 5/artifacts  # Do not include ch7
+  deliver:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download binary # <4>
+        uses: actions/download-artifact@v2
+        with:
+          name: api
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: api
+          asset_name: api
+          asset_content_type: application/octet-stream
+  containerize-buildpack:
+    name: Deploy Container buildpack
+    runs-on: ubuntu-latest #
+    needs: test #<6>
+    steps:
+    - name: Check out code into the Go module directory #
+      uses: actions/checkout@v2
+    - name: Install Pack
+      run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.21.1/pack-v0.21.1-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
+    - name: Build
+      run: pack build gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest --builder gcr.io/buildpacks/builder:v1
+    - name: Configure Docker
+      run: gcloud auth configure-docker --quiet
+    - name: Push Docker image
+      run: docker push $IMAGE_NAME
+  deploy-container:
+    name: Deploy Container buildpack
+    runs-on: ubuntu-latest # 
+    needs: containerize-buildpack #<6>
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:    
+    - name: Deploy to CaaS
+      id: deploy
+      uses: google-github-actions/deploy-cloudrun@main
+      with:
+        service: translate
+        image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest
+        credentials: ${{ secrets.gcp_credentials }}
+    - id: test
+      run: curl "${{ steps.deploy.outputs.url }}/hello"
   # deploy-function:
   #   name: Deploy FaaS
   #   runs-on: ubuntu-latest
@@ -140,7 +170,7 @@ jobs:
   #       entry_point: Translate
   #       runtime: go113
   #       credentials: ${{ secrets.gcp_credentials }}
-  #       source_dir: ch6 # DO NOT INCLUDE
+  #       source_dir: ch7 # DO NOT INCLUDE
   #   - id: test
   #     run: curl "${{ steps.deploy.outputs.url }}/hello"
   # deploy-paas:
@@ -158,6 +188,6 @@ jobs:
   #     uses: google-github-actions/deploy-appengine@main
   #     with:
   #       credentials: ${{ secrets.gcp_credentials }}
-  #       working_directory: ch6 # DO NOT INCLUDE
+  #       working_directory: ch7 # DO NOT INCLUDE
   #   - id: test
   #     run: curl "${{ steps.deploy.outputs.url }}/translate/hello"
