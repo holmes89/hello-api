@@ -1,3 +1,4 @@
+// Package rest houses all rest handlers
 package rest
 
 import (
@@ -10,13 +11,13 @@ type Translator interface {
 	Translate(word string, language string) string
 }
 
-// TranslateHandler will translate calls for caller
+// TranslateHandler will translate calls for caller.
 type TranslateHandler struct {
 	service Translator
 }
 
 // NewTranslateHandler will create a new instance of the handler using a
-// translation service
+// translation service.
 func NewTranslateHandler(service Translator) *TranslateHandler {
 	return &TranslateHandler{
 		service: service,
@@ -40,7 +41,6 @@ func (t *TranslateHandler) TranslateHandler(w http.ResponseWriter, r *http.Reque
 	word := strings.ReplaceAll(r.URL.Path, "/", "")
 	translation := t.service.Translate(word, language)
 	if translation == "" {
-		language = ""
 		w.WriteHeader(404)
 		return
 	}

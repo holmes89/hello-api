@@ -1,3 +1,4 @@
+// Package translation houses logic to take a given word and find it in a different language
 package translation
 
 import "strings"
