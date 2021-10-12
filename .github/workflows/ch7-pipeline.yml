@@ -143,6 +143,10 @@ jobs:
       run: gcloud auth configure-docker --quiet
     - name: Push Docker image
       run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest
+    - name: Tag for Github
+      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest ghcr.io/holmes89/hello-api/hello-api:latest
+    - name: Push Docker image to GCP
+      run: docker push ghcr.io/holmes89/hello-api/hello-api:latest
   deploy-container:
     name: Deploy Container buildpack
     runs-on: ubuntu-latest # 

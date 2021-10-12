@@ -38,7 +38,7 @@ func (t *TranslateHandler) TranslateHandler(w http.ResponseWriter, r *http.Reque
 		language = "english"
 	}
 	language = strings.ToLower(language)
-	word := strings.ReplaceAll(r.URL.Path, "/", "")
+	word := strings.ReplaceAll(r.URL.Path, "/", "").
 	translation := t.service.Translate(word, language)
 	if translation == "" {
 		w.WriteHeader(404)
