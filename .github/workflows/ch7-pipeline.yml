@@ -7,6 +7,11 @@ on:
 defaults: # DO NOT INCLUDE
   run:
     working-directory: ./ch7
+    
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   format-check:
     name: Check formatting
@@ -143,10 +148,16 @@ jobs:
       run: gcloud auth configure-docker --quiet
     - name: Push Docker image
       run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest
+    - name: Log in to the GHCR
+      uses: docker/login-action@master
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Tag for Github
-      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest ghcr.io/holmes89/hello-api/hello-api:latest
+      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
     - name: Push Docker image to GCP
-      run: docker push ghcr.io/holmes89/hello-api/hello-api:latest
+      run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
   deploy-container:
     name: Deploy Container buildpack
     runs-on: ubuntu-latest # 
