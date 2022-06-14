@@ -1,8 +1,8 @@
 GO_VERSION := 1.17  # <1>
 
-.PHONY: install-go init-go
-
-setup: install-go init-go # <2>
+setup: # <2>
+	install-go
+	init-go
 
 install-go: # <3>
 	wget "https://golang.org/dl/go$(GO_VERSION).linux-amd64.tar.gz"
@@ -21,3 +21,19 @@ upgrade-go: # <5>
 
 build:
 	go build -o api cmd/main.go
+
+test:
+	go test ./... -coverprofile=coverage.out
+
+coverage:
+	go tool cover -func coverage.out \
+	| grep "total:" | awk '{print ((int($$3) > 80) != 1) }'
+
+report:
+	go tool cover -html=coverage.out -o cover.html
+
+check-format:
+	test -z $$(go fmt ./...)
+
+install-lint:
+	sudo curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.41.1
