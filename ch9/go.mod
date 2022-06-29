@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/cucumber/godog v0.12.5
+	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/stretchr/testify v1.7.0
 )

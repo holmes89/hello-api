@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -40,11 +41,8 @@ func (api *apiFeature) theResponseShouldBe(arg1 string) error {
 	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusNotFound {
 		return fmt.Errorf("unable to call api: %d %s", resp.StatusCode(), url)
 	}
-	res := resp.Result().(*rest.Resp)
-	// if res.Language != api.language {
-	// 	return fmt.Errorf("language should be set to %s but instead was %+v", api.language, res)
-	// }
 
+	res := resp.Result().(*rest.Resp)
 	if res.Translation != arg1 {
 		return fmt.Errorf("translation should be set to %s", arg1)
 	}
@@ -57,18 +55,35 @@ func (api *apiFeature) theWord(arg1 string) error {
 	return nil
 }
 
+func InitializeTestSuite(sc *godog.TestSuiteContext) {
+	sc.BeforeSuite(func() {
+
+	})
+
+	sc.AfterSuite(func() {
+
+	})
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 
 	client := resty.New()
-	cfg := config.Configuration{}
-	cfg.LoadFromEnv()
-
-	mux := API(cfg)
-	server := httptest.NewServer(mux)
 	api := &apiFeature{
 		client: client,
-		server: server,
 	}
+
+	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
+		cfg := config.Configuration{}
+		cfg.LoadFromEnv()
+		mux := API(cfg)
+		server := httptest.NewServer(mux)
+		api.server = server
+		return ctx, nil
+	})
+	ctx.After(func(ctx context.Context, sc *godog.Scenario, err error) (context.Context, error) {
+		api.server.Close()
+		return ctx, nil
+	})
 
 	ctx.Step(`^I translate it to "([^"]*)"$`, api.iTranslateItTo)
 	ctx.Step(`^the response should be "([^"]*)"$`, api.theResponseShouldBe)

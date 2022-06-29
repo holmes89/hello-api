@@ -27,13 +27,13 @@ func API(cfg config.Configuration) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	var translationService rest.Translator
-	translationService = translation.NewStaticService()
-	if cfg.LegacyEndpoint != "" {
-		log.Printf("creating external translation client: %s", cfg.LegacyEndpoint)
-		client := translation.NewHelloClient(cfg.LegacyEndpoint)
-		translationService = translation.NewRemoteService(client)
-	}
-
+	// translationService = translation.NewStaticService()
+	// if cfg.LegacyEndpoint != "" {
+	// 	log.Printf("creating external translation client: %s", cfg.LegacyEndpoint)
+	// 	client := translation.NewHelloClient(cfg.LegacyEndpoint)
+	// 	translationService = translation.NewRemoteService(client)
+	// }
+	translationService = translation.NewDatabaseService(cfg) // TODO close
 	translateHandler := rest.NewTranslateHandler(translationService)
 
 	mux.HandleFunc("/translate/hello", translateHandler.TranslateHandler)
