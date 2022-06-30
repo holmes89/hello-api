@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 
 	"github.com/cucumber/godog"
 	resty "github.com/go-resty/resty/v2"
 	"github.com/holmes89/hello-api/config"
 	"github.com/holmes89/hello-api/handlers/rest"
+	"github.com/ory/dockertest"
 )
 
 type apiFeature struct {
@@ -18,6 +21,11 @@ type apiFeature struct {
 	word     string
 	language string
 }
+
+var (
+	pool     *dockertest.Pool
+	database *dockertest.Resource
+)
 
 func (api *apiFeature) iTranslateItTo(arg1 string) error {
 	api.language = arg1
@@ -56,12 +64,37 @@ func (api *apiFeature) theWord(arg1 string) error {
 }
 
 func InitializeTestSuite(sc *godog.TestSuiteContext) {
-	sc.BeforeSuite(func() {
 
+	var err error
+
+	sc.BeforeSuite(func() {
+		pool, err = dockertest.NewPool("")
+		if err != nil {
+			panic(fmt.Sprintf("unable to create connection pool %s", err))
+		}
+
+		wd, err := os.Getwd()
+		if err != nil {
+			panic(fmt.Sprintf("unable to get working directory %s", err))
+		}
+
+		mount := fmt.Sprintf("%s/data/:/data/", filepath.Dir(wd))
+		fmt.Println(mount)
+		redis, err := pool.RunWithOptions(&dockertest.RunOptions{
+			Repository: "redis",
+			Mounts:     []string{mount},
+		})
+		if err != nil {
+			panic(fmt.Sprintf("unable to create container: %s", err))
+		}
+		if err := redis.Expire(600); err != nil {
+			panic("unable to set expiration on container")
+		} //Destroy container if it takes too long
+		database = redis
 	})
 
 	sc.AfterSuite(func() {
-
+		database.Close()
 	})
 }
 
@@ -75,6 +108,9 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		cfg := config.Configuration{}
 		cfg.LoadFromEnv()
+		cfg.DatabasePort = database.GetPort("6379/tcp")
+		cfg.DatabaseURL = "localhost"
+		fmt.Printf("%+v\n", cfg)
 		mux := API(cfg)
 		server := httptest.NewServer(mux)
 		api.server = server

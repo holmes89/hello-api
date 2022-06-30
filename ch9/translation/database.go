@@ -17,7 +17,7 @@ type Database struct {
 
 func NewDatabaseService(cfg config.Configuration) *Database {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     fmt.Sprintf("%s:%s", cfg.DatabaseURL, cfg.DatabasePort),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
@@ -27,5 +27,9 @@ func NewDatabaseService(cfg config.Configuration) *Database {
 }
 
 func (s *Database) Translate(word string, language string) string {
-	return s.conn.Get(context.Background(), fmt.Sprintf("%s:%s", word, language)).Val()
+	out := s.conn.Get(context.Background(), fmt.Sprintf("%s:%s", word, language))
+	if out.Err() != nil {
+		panic(out.Err())
+	}
+	return out.Val()
 }
