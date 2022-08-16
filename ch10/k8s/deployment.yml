@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: hello-api
+  template:
+    metadata:
+      name: hello-api
+      labels:
+        app: hello-api
+    spec:
+      containers:
+      - name: hello-api
+        imagePullPolicy: Never
+        image: holmes89/hello-api:v0.3
+        ports:
+        - containerPort: 8080
+          name: hello-api-svc
+        env:
+        - name: DATABASE_URL
+          value: "redis-cluster-headless"
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-cluster
+              key: redis-password
+              optional: false

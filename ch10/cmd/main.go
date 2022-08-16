@@ -34,7 +34,9 @@ func API(cfg config.Configuration) *http.ServeMux {
 		translationService = translation.NewRemoteService(client)
 	}
 	if cfg.DatabaseURL != "" {
-		translationService = translation.NewDatabaseService(cfg)
+		conn := translation.NewDatabaseService(cfg)
+		conn.LoadData()
+		translationService = conn
 	}
 	translateHandler := rest.NewTranslateHandler(translationService)
 
