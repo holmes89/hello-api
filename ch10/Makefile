@@ -40,4 +40,4 @@ install-lint:
 
 install-redis:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
-	helm install redis-cluster bitnami/redis --set password=password
+	helm install redis-cluster bitnami/redis --set password=$$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
