@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "jest": "^29.0.0",
-    "supertest": "^6.2.4"
+    "supertest": "^6.2.4",
+    "testcontainers": "^8.13.1"
   }
 }
