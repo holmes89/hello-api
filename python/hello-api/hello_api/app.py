@@ -5,7 +5,9 @@ from hello_api.repo import RepositoryInterface
 
 app = FastAPI()
 
+repo = deps.redis_client
+
 @app.get("/translate/{word}")
-def translation(word: str, language: str = 'english', repo: RepositoryInterface = Depends(deps.redis_client)):
+def translation(word: str, language: str = 'english', repo: RepositoryInterface = Depends(repo)):
     resp = repo.translate(language, word)
     return {"language": language.lower(), "translation": resp}
