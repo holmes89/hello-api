@@ -1,6 +1,5 @@
 from hello_api.app import app, repo
 from fastapi.testclient import TestClient
-import hello_api.deps as deps
 from redislite import Redis
 
 from hello_api.repo import RepositoryInterface
@@ -9,12 +8,11 @@ import unittest
 
 
 class AppIntegrationTest(unittest.TestCase):
-
     def redis_client(self) -> RepositoryInterface:
         self.fake_redis = Redis()
-        self.fake_redis.set('hello:german', 'Hallo')
-        self.fake_redis.set('hello:english', 'Hello')
-        
+        self.fake_redis.set("hello:german", "Hallo")
+        self.fake_redis.set("hello:english", "Hello")
+
         return RedisRepository(client=self.fake_redis)
 
     def setUp(self):
