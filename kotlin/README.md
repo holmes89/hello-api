@@ -52,3 +52,5 @@ If you want to learn more about building native executables, please consult http
 - RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A JAX-RS implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
 - Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
 - Redis Client ([guide](https://quarkus.io/guides/redis)): Connect to Redis in either imperative or reactive style
+- ./mvnw package -Pnative -Dquarkus.native.container-build=true
+- docker build -f src/main/docker/Dockerfile.native -t quarkus/hello-quarkus .

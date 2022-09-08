@@ -1,7 +1,11 @@
 package dev.joeldholmes.translate
 
 import javax.inject.Inject
-import javax.ws.rs.*
+import javax.ws.rs.GET
+import javax.ws.rs.Path
+import javax.ws.rs.PathParam
+import javax.ws.rs.Produces
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 
 @Path("/translate")
@@ -15,6 +19,6 @@ class TranslationResource {
     @Produces(MediaType.APPLICATION_JSON)
     fun translate(
         @PathParam("word") word: String,
-        @QueryParam("language") language: String?,
+        @QueryParam("language") language: String?
     ) = service.translate(language, word)
 }

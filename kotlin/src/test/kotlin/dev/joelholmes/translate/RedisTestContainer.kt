@@ -1,9 +1,9 @@
 package dev.joelholmes.translate
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager
+import org.testcontainers.containers.BindMode
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
-import org.testcontainers.containers.BindMode
 
 class RedisTestContainer : QuarkusTestResourceLifecycleManager {
 

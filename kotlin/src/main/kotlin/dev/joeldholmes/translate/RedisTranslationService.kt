@@ -6,15 +6,15 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class RedisTranslationService: ITranslationService {
+class RedisTranslationService : ITranslationService {
 
     @Inject
     private lateinit var redisAPI: RedisDataSource
 
-    @ConfigProperty(name="default.language")
+    @ConfigProperty(name = "default.language")
     var defaultLanguage: String? = "english"
 
-    override fun translate(language: String?, word: String) : Translation? {
+    override fun translate(language: String?, word: String): Translation? {
         val commands = redisAPI?.string(String::class.java)
         val lang = language?.lowercase() ?: defaultLanguage
         val key = "$word:$lang"
@@ -22,7 +22,7 @@ class RedisTranslationService: ITranslationService {
         return if (translation == null) {
             null
         } else {
-            Translation(language = lang, translation= translation)
+            Translation(language = lang, translation = translation)
         }
     }
 }
