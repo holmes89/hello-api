@@ -115,7 +115,7 @@ jobs:
     - name: Build
       run: make build 
     - name: Build Container
-      run: docker build -f src/main/docker/Dockerfile.jvm -t quarkus/hello-quarkus .
+      run: docker build -f src/main/docker/Dockerfile.jvm -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:kotlin-latest .
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@main
       with:
@@ -133,7 +133,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Tag for Github
-      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:kotlin-latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:kotlin-latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:kotlin-latest
     - name: Push Docker image to GCP
       run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:kotlin-latest
   
