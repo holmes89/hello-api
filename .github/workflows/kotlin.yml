@@ -26,6 +26,7 @@ jobs:
     - name: Download Klint
       run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.47.1/ktlint && chmod a+x ktlint
     - name: Lint
+      run: ./klint
   test:
     name: Test Application
     needs: 
