@@ -1,0 +1,62 @@
+name: Chapter 3 Checks
+
+on:
+  push:
+    branches: # <1>
+      - main
+defaults: # DO NOT INCLUDE
+  run:
+    working-directory: ./ch3
+jobs:
+  test:
+    name: Test Application
+    runs-on: ubuntu-latest # <2>
+    steps:
+    - name: Set up Go 1.x 
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+    - name: Check out code into the Go module directory 
+      uses: actions/checkout@v2
+    - name: Run Test
+      run: make test # <1>
+    - name: Coverage Check
+      run: make coverage # <2>
+    - name: Generate Report
+      run: make report # <3>
+    - name: Copy Files 
+      run: |
+           mkdir  reports
+           cp cover.html reports/.
+
+    - name: Archive # <4>
+      uses: actions/upload-artifact@v2
+      with:
+          name: reports
+          path: ch3/reports  # Do not include ch3
+  build:
+    name: Build App
+    runs-on: ubuntu-latest #
+    needs: test #<6>
+    steps:
+    - name: Set up Go 1.x #
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+
+    - name: Check out code into the Go module directory #
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: make build #
+
+    - name: Copy Files #
+      run: |
+           mkdir  artifacts
+           cp api artifacts/.
+
+    - name: Archive #
+      uses: actions/upload-artifact@v2
+      with:
+          name: api #
+          path: ch3/artifacts  # Do not include ch3

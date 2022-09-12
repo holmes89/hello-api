@@ -1,0 +1,138 @@
+name: Chapter 9 Checks
+
+on:
+  push:
+    branches: # <1>
+      - main
+defaults: # DO NOT INCLUDE
+  run:
+    working-directory: ./kotlin
+    
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  format-check:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+    - name: Download Klint
+      run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.47.1/ktlint && chmod a+x ktlint
+    - name: Lint
+  test:
+    name: Test Application
+    needs: 
+      - format-check
+    runs-on: ubuntu-latest # <2>
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+    - name: Run Test
+      run: make test # <1>
+  build:
+    name: Build App
+    runs-on: ubuntu-latest #
+    needs: smoke-test #<6>
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+
+    - name: Build
+      run: make build #
+
+    - name: Copy Files #
+      run: |
+           mkdir artifacts
+           cp ./target/hello-api-1.0.0-SNAPSHOT-native-image-source-jar/hello-api-1.0.0-SNAPSHOT-runner.jar artifacts/.
+    - name: Archive #
+      uses: actions/upload-artifact@v2
+      with:
+          name: api #
+          path: kotlin/artifacts  # Do not include ch7
+  deliver:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download binary # <4>
+        uses: actions/download-artifact@v2
+        with:
+          name: api
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Jar
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: api
+          asset_name: api
+          asset_content_type: application/octet-stream
+  containerize:
+    name: Build Container buildpack
+    runs-on: ubuntu-latest #
+    needs: smoke-test #<6>
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+    - name: Build
+      run: make build 
+    - name: Build Container
+      run: docker build -f src/main/docker/Dockerfile.jvm -t quarkus/hello-quarkus .
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@main
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.gcp_credentials }}
+        export_default_credentials: true
+    - name: Configure Docker
+      run: gcloud auth configure-docker --quiet
+    - name: Push Docker image
+      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:kotlin-latest
+    - name: Log in to the GHCR
+      uses: docker/login-action@master
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Tag for Github
+      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:kotlin-latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+    - name: Push Docker image to GCP
+      run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:kotlin-latest
+  
