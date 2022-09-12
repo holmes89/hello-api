@@ -17,53 +17,29 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-latest
     steps:
-   - uses: actions/checkout@v3
-   - uses: actions/setup-node@v3
-     with:
-      node-version: 16
-   - run: npm ci
-   - name: Run Check Format
-     run: npm run check-format
-   - name: Run Check Lint
-     run: npm run lint
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+       node-version: 16
+    - run: npm ci
+    - name: Run Check Format
+      run: npm run check-format
+    - name: Run Check Lint
+      run: npm run lint
   test:
-    name: Check formatting
+    name: Test
     runs-on: ubuntu-latest
     steps:
-   - uses: actions/checkout@v3
-   - uses: actions/setup-node@v3
-     with:
-      node-version: 16
-   - run: npm ci
-   - name: Test
-     run: npm run test
-  build:
-    name: Build App
-    runs-on: ubuntu-latest #
-    needs: test #<6>
-    steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/setup-node@v3
       with:
-        distribution: 'temurin'
-        java-version: '17'
-        cache: 'maven'
-
-    - name: Build
-      run: make build #
-
-    - name: Copy Files #
-      run: |
-           mkdir artifacts
-           cp ./target/hello-api-1.0.0-SNAPSHOT-native-image-source-jar/hello-api-1.0.0-SNAPSHOT-runner.jar artifacts/.
-    - name: Archive #
-      uses: actions/upload-artifact@v2
-      with:
-          name: api #
-          path: javascript/artifacts  # Do not include ch7
+       node-version: 16
+    - run: npm ci
+    - name: Test
+      run: npm run test
   deliver:
     name: Release
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
