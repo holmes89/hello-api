@@ -45,7 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build Container
-      run: docker build -f src/main/docker/Dockerfile.jvm -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:javascript-latest .
+      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:javascript-latest .
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@main
       with:

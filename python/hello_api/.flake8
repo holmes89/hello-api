@@ -1,3 +1,0 @@
-[flake8]
-select = E123,W456
-max-line-length = 88
