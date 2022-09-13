@@ -1,4 +1,4 @@
-name: javascript Checks
+name: Python Checks
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 defaults: # DO NOT INCLUDE
   run:
-    working-directory: ./javascript
+    working-directory: ./python
     
 env:
   REGISTRY: ghcr.io
@@ -18,26 +18,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-python@v4
       with:
-       node-version: 16
-    - run: npm ci
-    - name: Run Check Format
-      run: npm run check-format
+        python-version: '3.10' 
+    - run: pip install --user --upgrade nox
     - name: Run Check Lint
-      run: npm run lint
+      run: nox -rs lint
   test:
     name: Test
     runs-on: ubuntu-latest
     needs: format-check
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+        - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
-       node-version: 16
-    - run: npm ci
-    - name: Test
-      run: npm run test
+        python-version: '3.10' 
+    - run: pip install --user --upgrade nox
+    - name: Run Tests
+      run: nox -rs tests
   containerize:
     name: Build and Push Container
     runs-on: ubuntu-latest #
@@ -45,7 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build Container
-      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:javascript-latest .
+      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:python-latest .
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@main
       with:
@@ -55,7 +53,7 @@ jobs:
     - name: Configure Docker
       run: gcloud auth configure-docker --quiet
     - name: Push Docker image
-      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:javascript-latest
+      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:python-latest
     - name: Log in to the GHCR
       uses: docker/login-action@master
       with:
@@ -63,7 +61,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Tag for Github
-      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:javascript-latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:javascript-latest
+      run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:python-latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:python-latest
     - name: Push Docker image to GCP
-      run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:javascript-latest
+      run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:python-latest
   
