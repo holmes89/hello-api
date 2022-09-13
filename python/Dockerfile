@@ -20,4 +20,4 @@ RUN poetry config virtualenvs.create false \
 COPY hello_api hello_api
 ENV PORT 8080
 EXPOSE 8080
-CMD ["uvicorn","hello_api.app:app","--port","8080"]
+CMD ["uvicorn","hello_api.app:app","--port","8080","--host","0.0.0.0"]
