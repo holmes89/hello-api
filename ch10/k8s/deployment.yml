@@ -15,20 +15,20 @@ spec:
     spec:
       containers:
       - name: hello-api
-        imagePullPolicy: Never
-        image: holmes89/hello-api:v0.3
+        # imagePullPolicy: Never
+        image: gcr.io/holmes89-205014/hello-api:latest
         ports:
         - containerPort: 8080
           name: hello-api-svc
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: hello-api
-              key: database_url
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-cluster
-              key: redis-password
-              optional: false
+        # env:
+        # - name: DATABASE_URL
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: hello-api
+        #       key: database_url
+        # - name: DATABASE_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: redis-cluster
+        #       key: redis-password
+        #       optional: false
